@@ -1,0 +1,234 @@
+\documentclass[12pt]{article}
+
+% Set page size and margins
+\usepackage[letterpaper,top=2cm,bottom=2cm,left=3cm,right=3cm,marginparwidth=1.75cm]{geometry}
+
+% Useful packages
+\usepackage{graphicx}
+\usepackage{amsmath}
+
+\title{AM 213A HW1}
+\author{Joseph Moore}
+\date{Winter 2022}
+
+\begin{document}
+
+\maketitle
+
+\paragraph{1.}
+    
+    $A^{-1} = A^*$ and $A^*A = I$. Thus the $i,j$ components of $A^*A$ will be zero when $i\ne j$ and $1$ when $i = j$. Now looking at A,
+    
+    \[ A = 
+    \left[\begin{matrix}
+    a_{11} & a_{12} & ... & a_{1m}\\
+    0 & a_{22} & ... & a_{2m}\\
+    : & : & : & :\\
+    0 & 0 & ... & a_{mm}
+    \end{matrix}\right]
+    \]
+    
+    We then notice that $(A^*A)_{11} = \bar{a}_{11}a_{11} = 1$ as the rest of the elements of the first column of $A$ are zero. Plugging in these zeros and working our way down the diagonal reveals that the same must be true of $(A^*A)_{22}$ as the rest of the elements of the second column of A are now zero as well. We can work our way down the diagonal like this until all non-diagonal elements are zero, thus leaving a diagonal matrix. 
+    
+    
+\paragraph{2.}
+	\subparagraph{a)}
+		Taking $\lambda \ne 0$ as the eigenvalue of $A$ we have
+		\[
+		Ax = \lambda x 
+		\Rightarrow A^{-1}Ax = A^{-1} \lambda x 
+		\Rightarrow x = A^{-1} \lambda x
+		\Rightarrow A^{-1} x = \frac{1}{\lambda} x.
+		\]
+		From this form we can conclude that $\frac{1}{\lambda}$ is the eigenvalue of $A^{-1}$.
+		
+	\subparagraph{b)}
+		If we let $\lambda$ be the eigenvalue of $AB$ and $Bx = y$ then we can formulate the following
+		\[
+		(AB)x = \lambda x
+		\Rightarrow Ay = \lambda x
+		\Rightarrow BAy = B\lambda x
+		\Rightarrow BAy = \lambda Bx
+		\Rightarrow (BA)y = \lambda y
+		\]
+		In this form we can see that $\lambda$ is also the eigenvalue of $BA$.		
+		
+	\subparagraph{c)}
+		The eigenvalues of $A$ are given by $det(A - \lambda I)$. Now using the following
+		\[
+		(A - \lambda I)^T = A^T - \lambda I^T = A^T - \lambda I
+		\]	
+		and that $det(M) = det(M^T)$ we can conclude that $det(A^T - \lambda x) = det(A - \lambda I)$ and thus $A^T$ will have the same eigenvalues of $A$.
+
+\paragraph{3.}
+	\subparagraph{a)}
+		Given that $A$ is Hermitian we have that $A^*=A$. With $Ax = \lambda x$ we have
+		\[
+		\bar{\lambda}x^*x = (\lambda x)^* x = (Ax)^*x = x^*A^*x = x^*Ax = x^*\lambda x = \lambda x^*x
+		\]
+		Thus $\lambda = \bar{\lambda}$.
+
+	\subparagraph{b)}
+		Let $Ax = \lambda_1 x$ and $Ay = \lambda_2 y$ then it follows that
+		\[
+		x^*Ay = x^*A^*y = (Ax)^*y = (\lambda_1 x)^*y = \bar{\lambda_1}x^*y = \lambda_1 x^*y
+		\]
+		But also
+		\[
+		x^*Ay = x^*\lambda_2 y = \lambda_2 x^*y
+		\]
+		Which is a contradiction unless $x^*y = 0$, which is another way of saying the two vector are orthogonal. 
+
+\paragraph{4.}
+	We can compose a matrix of the eigenvectors of $A$ and call $P$. Then we can decompose $A$ into $PDP^{-1}$, where $D$ is the diagonal matrix of eigenvalues. Next, we can rewrite $x$ as a linear combination of these eigenvectors, $x = \sum_{i=1}^{m} a_iu_i$. From this we can derive the following from the inner-product of $(Ax,x)$
+	\[
+	x^tAx = (a_1u_1^T + a_2u_2^T + ... + a_mu_m^T)PDP^*(a_1u_1 + a_2u_2 + ... + a_mu_m)
+	\]
+	Because $u_i$ are orthogonal $xu_j = \sum_{i=1}^{m} a_iu_i^Tu_j = a_ju_j^Tu_j = a_j||u_j||_2^2$ and we get
+	\[
+	(\begin{matrix}
+	a_1||u_1||_2^2 & a_2||u_2||_2^2 & ... & a_m||u_m||_2^2
+	\end{matrix})
+	\left(\begin{matrix}
+	\lambda_1 & 0 & ... & 0 \\
+	0 & \lambda_2 & ... & 0 \\
+	: & : & : & : \\
+	0 & 0 & ... & \lambda_m \\
+	\end{matrix}\right)
+	\left(\begin{matrix}
+	a_1||u_1||_2^2 \\
+	a_2||u_2||_2^2 \\ 
+	: \\ 
+	a_m||u_m||_2^2
+	\end{matrix}\right)
+	\]
+	$u_i$ form an orthonormal bases so their 2-norm is always one. Thus 
+	\[
+	x^TAx = \sum_{i=1}^{m} \lambda_i|a_i|^2
+	\]
+	If all $\lambda_i > 0$ then $A$ will meet the qualifications for being positive definite. 
+
+\paragraph{5.}
+	\subparagraph{a)}
+		We start $Ax = \lambda x$ to get
+		\[ (Ax)^*Ax = (Ax)^*\lambda x \]
+		\[ x^*A^*Ax = x^*\lambda^*\lambda x \]
+		\[ x^*Ix = x^*|\lambda|^2 x \]
+		\[ ||x||^2 = |\lambda|^2 ||x||^2 \]
+		\[ 1 = |\lambda|^2 \Rightarrow \lambda = 1\] 
+		
+	\subparagraph{b)}
+		\[
+		||A||_F = \sqrt{trace(A^*A)} = \sqrt{trace(I)}
+		\]
+		The sum of the diagonals will always be greater than 1 and thus $||A||_F$ can never be equal to one.
+
+\paragraph{6.}
+	\subparagraph{a)}
+		We start with $Ax = \lambda x$ and apply $x^*$ to it to get
+		\[
+		x^*Ax = x^*\lambda x \Rightarrow
+		x^*Ax = \lambda x^*x \Rightarrow
+		\lambda = \frac{x^*Ax}{x^*x}
+		\]
+		taking the conjugate transpose gives us
+		\[
+		\lambda^* = \frac{(x^*Ax)^*}{(x^*x)^*} \Rightarrow
+		\bar{\lambda} = \frac{x^*A^*x}{x^*x} \Rightarrow
+		\bar{\lambda} = -\frac{x^*Ax}{x^*x} \Rightarrow
+		\]
+		Thus $\bar{\lambda} = -\lambda$ which must mean that $\lambda$ is purely imaginary.
+		
+	\subparagraph{b)}
+		Applying $I - A$ to $x$ will yield $1 - \lambda$. Because $\lambda$ is purely imaginary this will never be equal to zero and thus $I - A$ is non-singular.
+	
+
+\paragraph{7.}
+	Assume that $u$ is eigenvector of $A$ such that $||u|| = 1$. Then we have that
+	\[
+	||A|| \ge ||Au|| = ||\lambda u|| = |\lambda|
+	\]
+	and all eigenvalues must be equal or less than $||A||$.
+
+\paragraph{8.}
+	\subparagraph{a)}
+		If we note that $vv^*$ is a rank one matrix with the largest eigenvalue given by $v^*v$ then it follows that
+		\[
+		||A||_2 = (\sigma(A^*A))^{1/2} = (\sigma(vu^*uv^*))^{1/2} = (u^*u)^{1/2}\sigma(vv^*)^{1/2} = (u^*u)^{1/2}(v^*v)^{1/2} = ||u||_2 ||v||_2
+		\]
+	
+	\subparagraph{b)}
+	\[
+	||A||_F = \sqrt{trace(A^*A)} = \sqrt{trace(vu^*uv^*)} = \sqrt{trace(v^*vu^*u)} = \sqrt{vec(v^*v)vec(u^*u)}
+	\]
+	\[
+	= \sqrt{trace(v^*v)}\sqrt{trace(u^*u)} = ||v||_F ||u||_F
+	\]
+
+\paragraph{9.}
+	\subparagraph{a)}
+		First we start by establishing 
+		\[
+		||Qx||_2 = \sqrt{(Qx)^*(Qx)} = \sqrt{x^*Q^*Qx} = \sqrt{x^*x} = ||x||_2
+		\]
+		so that
+		\[
+		||AQ||_2 = sup \frac{||AQx||_2}{||x||_2} = sup \frac{||Ax||_2}{||x||_2} = ||A||_2
+		\]
+	
+	\subparagraph{b)}
+		\[
+		||AQ||_F = \sqrt{trace((AQ)^*AQ)} = \sqrt{trace((Q^*A^*AQ)} = \sqrt{trace(QQ^*A^*A)}
+		\]\[
+		= \sqrt{trace(A^*A)} = ||A||_F
+		\]
+
+\paragraph{10.}
+	\subparagraph{a)}
+		If we write $B$ as $U\Sigma V^*$ then we can derive the following
+		\[
+		A = QBQ^* = QU\Sigma V^*Q^* = U'\Sigma V'^*
+		\]
+		Since the product of unitary matrices are themselves unitary then the result is the SVD of $A$ and thus $A$ and $B$ share the same singular values in $\Sigma$.
+		
+	\subparagraph{b)}
+		?
+		
+
+\paragraph{11.}
+	\subparagraph{a)}
+		\[
+		\kappa = \frac{||J||_{\infty}||x||_{\infty}}{||f(x)||} = \frac{2\cdot max\{|x_1|,|x_2|\}}{|x_1 + x_2|}
+		\]
+		The quantity is vary large as $|x_1 + x_2| -> 0$ so $\kappa$ is ill-conditioned when $x_1 \approx -x_2$. 
+	
+	\subparagraph{b)}
+		\[
+		\kappa = \frac{||J||_{\infty}||x||_{\infty}}{||f(x)||} = \frac{(|x_1|+|x_2|) \cdot max\{|x_1|,|x_2|\}}{|x_1x_2|}
+		\]
+		When we split this fraction we notice that $\kappa$ becomes ill-conditioned when $x_1 >> x_2$ or $x_2 >> x_1$.
+
+	\subparagraph{c)}
+		\[
+		\kappa = \frac{||J||_{\infty}||x||_{\infty}}{||f(x)||} = \frac{9|x-2|^8 \cdot |x|}{|x-2|^9} \approx \frac{|x|^9}{|x|^9}
+		\]
+		$\kappa$ should always be relatively well-conditioned. 
+	
+	
+\paragraph{12.}
+	On GitHub.
+
+
+\end{document}
+
+
+
+
+
+
+
+
+
+
+
+
