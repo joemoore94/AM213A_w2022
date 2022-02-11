@@ -3,34 +3,142 @@
  * Purpose: more functions for matrices
  */
 
-#include <stdlib.h>
-#include <math.h>
-#include <stdio.h>
-
 #include "MatFunc.h"
-#include "ColMajorMat.h"
 
-void MatTrace(ColMajorMat A, double size, double *trace) {
-    *trace = 0;
-    for(int i = 0; i < size; i++) {
-        *trace = *trace + A->data[MatIdx(A,i,i)];
+/*
+I avoided matrix dimensions as inputs since they are included in the data structure of the matrix.
+The dimensions are being passed, just through the data structure.
+*/
+
+/*calculates the trace of a vector*/
+double MatTrace(ColMajorMat A) {
+    double trace = 0;
+    for(int i = 0; i < A->m; i++) {
+        trace = trace + A->data[MatIdx(A,i,i)];
     }
+    return trace;
 }
 
-void TwoNorm(ColMajorMat A, double size, double* norm) {
-    *norm = 0;
-    for (int i = 0; i < size; i++) {
-        *norm = *norm + A->data[MatIdx(A,i,0)]*A->data[MatIdx(A,i,0)];
+/*calculates the 2-norm of a vector*/
+double TwoNorm(ColMajorMat A) {
+    double norm = 0;
+    for (int i = 0; i < A->m; i++) {
+        norm = norm + A->data[MatIdx(A,i,0)]*A->data[MatIdx(A,i,0)];
     }
-    *norm = sqrt(*norm);
+    return sqrt(norm);
 }
 
-void PrintMat(ColMajorMat A, int m, int n) {
-    printf("%dx%d Matrix\n", m, n);
-    for (int i = 0; i < m; i++) {
-        for (int j = 0; j < n; j++) {
-            printf("%f ", A->data[MatIdx(A,j,i)]);
+/*calculates the 2-norm of a specified column vector of a matrix*/
+double TwoNormCol(ColMajorMat A, double col) {
+    double norm = 0;
+    for (int i = 0; i < A->m; i++) {
+        norm = norm + A->data[MatIdx(A,i,col)]*A->data[MatIdx(A,i,col)];
+    }
+    return sqrt(norm);
+}
+
+/*prints all the elements of a matrix to the screen*/
+void PrintMat(ColMajorMat A) {
+    printf("%dx%d Matrix\n", A->m, A->n);
+    for (int i = 0; i < A->m; i++) {
+        for (int j = 0; j < A->n; j++) {
+            printf("%f ", A->data[MatIdx(A,i,j)]);
         }
         printf("\n");
+    }
+}
+
+/*prints all the elements of a matrix to the screen in scientific notation*/
+void PrintMatSciNot(ColMajorMat A) {
+    printf("%dx%d Matrix\n", A->m, A->n);
+    for (int i = 0; i < A->m; i++) {
+        for (int j = 0; j < A->n; j++) {
+            printf("%e ", A->data[MatIdx(A,i,j)]);
+        }
+        printf("\n");
+    }
+}
+
+/*Gaussian elimination with Partial Pivoting:*/
+void GEPP(ColMajorMat A, ColMajorMat B, bool *singular) {
+    *singular = false;
+    double eps = 0.001;
+    double scale = 0;
+    for (int col = 0; col < 3; col++) {
+        int maxIdx = col;
+        for (int row = col; row < A->m; row++) {
+            if (fabs(A->data[MatIdx(A,row,col)]) > fabs(A->data[MatIdx(A,maxIdx,col)])) {
+                maxIdx = row;
+            }
+        }
+        if (A->data[MatIdx(A,maxIdx,col)] < eps && A->data[MatIdx(A,maxIdx,col)] > -eps) {
+            *singular = true;
+            break;
+        }
+        RowSwap(A, col, maxIdx);
+        RowSwap(B, col, maxIdx);
+        for (int row = col+1; row < A->m; row++) {
+            scale = A->data[MatIdx(A,row,col)]/A->data[MatIdx(A,col,col)];
+            for (int i = 0; i < A->n; i++) {
+                A->data[MatIdx(A,row,i)] -= scale*A->data[MatIdx(A,col,i)];
+            }
+            for (int i = 0; i < B->n; i++) {
+                B->data[MatIdx(B,row,i)] -= scale*B->data[MatIdx(B,col,i)];
+            }
+        }
+    }
+}
+
+/*zero indexed row swapping*/
+void RowSwap(ColMajorMat A, int row1, int row2) {
+    double temp;
+    for (int i = 0; i < A->n; i++) {
+        temp = A->data[MatIdx(A,row1,i)];
+        A->data[MatIdx(A,row1,i)] = A->data[MatIdx(A,row2,i)];
+        A->data[MatIdx(A,row2,i)] = temp;
+    }
+}
+
+/*gives the solution of Ux = y, where U is an upper triagular matrix*/
+void BackSub(ColMajorMat A, ColMajorMat B) {
+    double sum;
+    for (int Bcol = 0; Bcol < B->n; Bcol++) {
+        B->data[MatIdx(B,B->m-1,Bcol)] /= A->data[MatIdx(A,A->m-1,A->n-1)];
+
+        for (int Arow = A->m-2; Arow > -1; Arow--) {
+            sum = 0.0;
+            for (int Acol = Arow+1; Acol < A->n; Acol++) {
+                sum += A->data[MatIdx(A,Arow,Acol)]*B->data[MatIdx(B,Acol,Bcol)];
+            }
+            B->data[MatIdx(B,Arow,Bcol)] -= sum;
+            B->data[MatIdx(B,Arow,Bcol)] /= A->data[MatIdx(A,Arow,Arow)];
+        }
+    }
+}
+
+/*multiplies two matrices and returns a new matrix*/
+ColMajorMat MatMatMult(ColMajorMat A, ColMajorMat B) {
+    ColMajorMat mat = malloc(sizeof(*mat));
+    mat->m = A->m; mat->n = B->n;
+    mat->data = calloc(mat->m*mat->n,sizeof(*mat->data));
+    double sum;
+    for (int row = 0; row < mat->m; row++) {
+        for (int col = 0; col < mat->n; col++) {
+            sum = 0.0;
+            for (int i = 0; i < A->n; i++) {
+                sum += A->data[MatIdx(A,row,i)]*B->data[MatIdx(A,i,col)];
+            }
+            mat->data[MatIdx(mat,row,col)] = sum;
+        }
+    }
+    return mat;
+}
+
+/*performs a matrix subtraction and replaces the first matrix with the results*/
+void MatMatSub(ColMajorMat A,ColMajorMat B) {
+    for (int row = 0; row < A->m; row++) {
+        for (int col = 0; col < A->n; col++) {
+            A->data[MatIdx(A,row,col)] -= B->data[MatIdx(B,row,col)];
+        }
     }
 }
