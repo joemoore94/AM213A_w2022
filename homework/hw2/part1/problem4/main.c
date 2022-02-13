@@ -22,20 +22,15 @@ int main(int argc, char const *argv[]) {
     PrintMat(B);
 
     bool singular;
-    GEPP(A, B, &singular);
+    ColMajorMat s = LUDecomp(A, &singular);
 
-    printf("\nMatrices after gaussian elimination\n");
-    printf("A: ");
+    printf("\nMatrix A after LU decomposition\n");
+    printf("LU: ");
     PrintMat(A);
-    printf("B: ");
-    PrintMat(B);
-
-    BackSub(A, B);
 
     printf("\nAfter back-substitution\n");
-    printf("A: ");
-    PrintMat(A);
-    printf("B: ");
+    BackSubLU(A, B, s);
+    printf("X: ");
     PrintMat(B);
 
     printf("\nError matix\n");

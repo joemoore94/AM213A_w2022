@@ -60,11 +60,11 @@ void PrintMatSciNot(ColMajorMat A) {
 }
 
 /*Gaussian elimination with Partial Pivoting:*/
-void GEPP(ColMajorMat A, ColMajorMat B, bool *singular) {
+void GEPP(ColMajorMat A, ColMajorMat B, bool* singular) {
     *singular = false;
     double eps = 0.001;
     double scale = 0;
-    for (int col = 0; col < 3; col++) {
+    for (int col = 0; col < A->m; col++) {
         int maxIdx = col;
         for (int row = col; row < A->m; row++) {
             if (fabs(A->data[MatIdx(A,row,col)]) > fabs(A->data[MatIdx(A,maxIdx,col)])) {
@@ -107,8 +107,41 @@ void BackSub(ColMajorMat A, ColMajorMat B) {
 
         for (int Arow = A->m-2; Arow > -1; Arow--) {
             sum = 0.0;
-            for (int Acol = Arow+1; Acol < A->n; Acol++) {
-                sum += A->data[MatIdx(A,Arow,Acol)]*B->data[MatIdx(B,Acol,Bcol)];
+            for (int i = Arow+1; i < A->n; i++) {
+                sum += A->data[MatIdx(A,Arow,i)]*B->data[MatIdx(B,i,Bcol)];
+            }
+            B->data[MatIdx(B,Arow,Bcol)] -= sum;
+            B->data[MatIdx(B,Arow,Bcol)] /= A->data[MatIdx(A,Arow,Arow)];
+        }
+    }
+}
+
+/*gives the solution of Ux = y, where U is an upper triagular matrix*/
+void BackSubLU(ColMajorMat A, ColMajorMat B, ColMajorMat s) {
+    ColMajorMat mat = malloc(sizeof(*mat));
+    mat->m = B->m; mat->n = B->n;
+    mat->data = calloc(mat->m*mat->n,sizeof(*mat->data));
+    for (int row = 0; row < B->m; row++) {
+        for (int col = 0; col < B->n; col++) {
+            mat->data[MatIdx(mat,row,col)] = B->data[MatIdx(B,s->data[MatIdx(s,row,0)],col)];
+        }
+    }
+    B->data = mat->data;
+    for (int Bcol = 0; Bcol < B->n; Bcol++) {
+        for (int j = 0; j < B->m-1; j++) {
+            for (int i = j+1; i < B->m; i++) {
+                B->data[MatIdx(B,i,Bcol)] -= B->data[MatIdx(B,j,Bcol)]*A->data[MatIdx(A,i,j)];
+            }
+        }
+    }
+    double sum;
+    for (int Bcol = 0; Bcol < B->n; Bcol++) {
+        B->data[MatIdx(B,B->m-1,Bcol)] /= A->data[MatIdx(A,A->m-1,A->n-1)];
+
+        for (int Arow = A->m-2; Arow > -1; Arow--) {
+            sum = 0.0;
+            for (int i = Arow+1; i < A->n; i++) {
+                sum += A->data[MatIdx(A,Arow,i)]*B->data[MatIdx(B,i,Bcol)];
             }
             B->data[MatIdx(B,Arow,Bcol)] -= sum;
             B->data[MatIdx(B,Arow,Bcol)] /= A->data[MatIdx(A,Arow,Arow)];
@@ -141,4 +174,39 @@ void MatMatSub(ColMajorMat A,ColMajorMat B) {
             A->data[MatIdx(A,row,col)] -= B->data[MatIdx(B,row,col)];
         }
     }
+}
+
+/**/
+ColMajorMat LUDecomp(ColMajorMat A, bool* singular) {
+    *singular = false;
+    double eps = 0.001;
+    double scale = 0;
+
+    ColMajorMat mat = malloc(sizeof(*mat));
+    mat->m = A->m; mat->n = 1;
+    mat->data = calloc(mat->m*mat->n,sizeof(*mat->data));
+    for (int i = 0; i < mat->m; i++) {mat->data[MatIdx(mat,i,0)] = i;}
+
+    for (int col = 0; col < A->m; col++) {
+        int maxIdx = col;
+        for (int row = col; row < A->m; row++) {
+            if (fabs(A->data[MatIdx(A,row,col)]) > fabs(A->data[MatIdx(A,maxIdx,col)])) {
+                maxIdx = row;
+            }
+        }
+        if (A->data[MatIdx(A,maxIdx,col)] < eps && A->data[MatIdx(A,maxIdx,col)] > -eps) {
+            *singular = true;
+            break;
+        }
+        RowSwap(A, col, maxIdx);
+        RowSwap(mat, col, maxIdx);
+        for (int row = col+1; row < A->m; row++) {
+            scale = A->data[MatIdx(A,row,col)]/A->data[MatIdx(A,col,col)];
+            for (int i = col; i < A->n; i++) {
+                A->data[MatIdx(A,row,i)] -= scale*A->data[MatIdx(A,col,i)];
+            }
+            A->data[MatIdx(A,row,col)] = scale;
+        }
+    }
+    return mat;
 }

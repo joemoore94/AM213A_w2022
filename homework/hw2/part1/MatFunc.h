@@ -21,10 +21,12 @@ double TwoNorm(ColMajorMat);
 double TwoNormCol(ColMajorMat,double);
 void PrintMat(ColMajorMat);
 void PrintMatSciNot(ColMajorMat);
-void GEPP(ColMajorMat,ColMajorMat,bool*);
+void GEPP(ColMajorMat,ColMajorMat, bool*);
 void RowSwap(ColMajorMat,int,int);
 void BackSub(ColMajorMat,ColMajorMat);
+void BackSubLU(ColMajorMat,ColMajorMat,ColMajorMat);
 ColMajorMat MatMatMult(ColMajorMat,ColMajorMat);
 void MatMatSub(ColMajorMat,ColMajorMat);
+ColMajorMat LUDecomp(ColMajorMat, bool*);
 
 #endif
