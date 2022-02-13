@@ -1,6 +1,6 @@
 /* File: main.c
  * Author: Joseh Moore
- * Purpose: ref some matrices
+ * Purpose: show LU decomposition
  */
 
 #include <stdlib.h>

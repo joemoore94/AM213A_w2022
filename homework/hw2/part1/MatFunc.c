@@ -176,7 +176,7 @@ void MatMatSub(ColMajorMat A,ColMajorMat B) {
     }
 }
 
-/**/
+/*decomposes a matrix into a lower and upper triangular matrix*/
 ColMajorMat LUDecomp(ColMajorMat A, bool* singular) {
     *singular = false;
     double eps = 0.001;
