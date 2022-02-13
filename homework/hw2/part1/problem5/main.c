@@ -1,6 +1,6 @@
 /* File: main.c
  * Author: Joseh Moore
- * Purpose:
+ * Purpose: finding a plane of 3 points
  */
 
 #include <stdlib.h>
