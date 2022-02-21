@@ -1,0 +1,164 @@
+\documentclass[12pt]{article}
+
+% Set page size and margins
+\usepackage[letterpaper,top=2cm,bottom=2cm,left=3cm,right=3cm,marginparwidth=1.75cm]{geometry}
+
+% Useful packages
+\usepackage{graphicx}
+\usepackage{amsmath}
+
+\title{AM 213A HW1}
+\author{Joseph Moore}
+\date{Winter 2022}
+
+\newenvironment{amatrix}[1]{%
+	\begin{array}{@{}*{#1}{c}|c@{}}
+	}{%
+	\end{array}
+}
+
+\begin{document}
+
+\maketitle
+
+\paragraph{1.}
+    We can write $A$ as $QUQ^{-1} = QUQ^T$ where $Q$ and $U$ are real matrices. If we remember that $Ax = \lambda x$ 
+    \[
+    Q^tAQ = 
+    \left(\begin{matrix}
+    q_1^T \\
+    q_2^T \\ 
+    : \\ 
+    q_m^T
+    \end{matrix}\right)
+    \left(\begin{matrix}
+    Aq_1 & Aq_2 & ... & Aq_m \\
+    \end{matrix}\right)
+    \]
+    
+    \[
+    = 
+    \left(\begin{matrix}
+    q_1^T \\
+    q_2^T \\ 
+    : \\ 
+    q_m^T
+    \end{matrix}\right)
+    \left(\begin{matrix}
+    \lambda_1 q_1 & \lambda_2q_2 & ... & \lambda_mq_m \\
+    \end{matrix}\right)
+    \]
+    \[
+    = 
+    \left(\begin{matrix}
+    \lambda & 0 & ... & 0 \\
+    0 & \lambda_2 & ... & 0 \\
+    : & : & :& : \\
+    0 & 0 & ... & \lambda_m
+    \end{matrix}\right)
+    \]
+    
+\paragraph{2.}
+	Using $\epsilon = 1e-17$ and $c = 1e18$ resulted in $x = 0.00000$ and $y = 1.00000$, which is wrong. We should get $(1,1)$. After multiplying the row by a large c, the algorithm pivots this row to the top and we get 
+	\[
+	\left(\begin{amatrix}{2}
+	c\epsilon & c & c \\
+	1 & 1 & 2
+	\end{amatrix}\right)
+	\Rightarrow
+	\left(\begin{amatrix}{2}
+	c\epsilon & c & c \\
+	1 - \frac{c\epsilon}{c\epsilon} & 1 - \frac{c}{c\epsilon} & 2 - \frac{c}{c\epsilon}
+	\end{amatrix}\right)	
+	=
+	\left(\begin{amatrix}{2}
+	c\epsilon & c & c \\
+	0 & 1 - \frac{1}{\epsilon} & 2 - \frac{1}{\epsilon}
+	\end{amatrix}\right)	
+	\]
+	performing back substitution gets us $y = 1$ from the bottom row and now the top row will give us $x = 0$. If we don't multiply by some very large constant then $\epsilon$ won't be pivoted to the top and we won't run into this problem. By leaving $\epsilon$ on the bottom row we can zero it out by subtracting a very small multiply of the first row from the second row. This will leave all the other elements at play virtually unchanged.
+
+
+\paragraph{3.}
+	We know that $x^TAx > 0$ for all vectors. Then it must be the case that $e_i^TAe_i > 0$ for each $i$. But $e_i^TAe_i$ is just the i'th diagonal element of $A$ and therefore each diagonal element of $A$ must be positive.
+	
+	\pagebreak
+	
+\paragraph{4.}
+	\subparagraph{(a)}
+		We need to show that $A_{21} - A_{21}A_{11}^{-1}A_{11} = 0$. Which is obvious since $A_{21} - A_{21}A_{11}^{-1}A_{11} = A_{21} - A_{21}I = A_{21} - A_{21} = 0$
+	
+	\subparagraph{(b)}
+		A can be upper triagularized by applying a lower triangular matrix to A or $L^-1A = U$. From this we can write 
+		\[
+		L^{-1} =
+		\left(\begin{matrix}
+		Y & 0 \\
+		X & W
+		\end{matrix}\right)
+		\]
+		From this we know that $YA_{11} = U_{11}$, where $U_{11}$ is $A_{11}$ upper triagularized and thus $Y = L_{11}^{-1}$ and 
+		\[
+		L^{-1} =
+		\left(\begin{matrix}
+		L_{11}^{-1} & 0 \\
+		X & W
+		\end{matrix}\right)
+		\]
+		\[
+		L^{-1}A = 
+		\left(\begin{matrix}
+		U_{11} & L_{11}^{-1}A_{12} \\
+		XA_{11} + WA_{21} & XA_{12} + WA_{22}
+		\end{matrix}\right)
+		\]
+		Now we set $XA_{11} + WA_{21} = 0$ and solving for $X$ we get $ X = -WA_{21}A_{11}^{-1}$. From this we have
+		\[
+		XA_{12} + WA_{22} = -WA_{21}A_{11}^{-1}A_{12} + WA_{22}
+		\]
+		Which is exactly what we want if we set $W = I$.
+		
+\paragraph{5.}
+	\subparagraph{(a)}
+		If we decompose $A$ into $A_1 + iA_2$ then we have 
+		\[
+		Ax = (A_1 + iA_2)x = A_1x + iA_2x = b_1 + ib_2
+		\]
+		Which becomes 
+		\[
+		A_1x = b_1
+		\]
+		\[
+		A_2x = b_2
+		\]
+		Which can be written as in matrix form
+		\[
+		\left(\begin{matrix}
+		A_1 & A_2 
+		\end{matrix}\right)
+		x
+		= 
+		\left(\begin{matrix}
+		b_1 \\
+		b_2
+		\end{matrix}\right)
+		\]
+		Which is'nt square but looks correct.
+		
+	\subparagraph{(b)}
+		Performing Gaussian elimination on a square $2m$ matrix is $O(\frac{8m^3}{3})$. For complex algebra, each multiplication will be quadrupled resulting in a $O(\frac{4m^3}{3})$, which is slightly cheaper.
+	
+
+\end{document}
+
+
+
+
+
+
+
+
+
+
+
+
