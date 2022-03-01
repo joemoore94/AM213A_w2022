@@ -18,7 +18,7 @@ typedef struct _p_ColMajorMat *ColMajorMat;
 
 float MatTrace(ColMajorMat);
 float TwoNorm(ColMajorMat);
-float TwoNormCol(ColMajorMat,float);
+float TwoNormCol(ColMajorMat,int);
 void PrintMat(ColMajorMat);
 void PrintMatSciNot(ColMajorMat);
 void GEPP(ColMajorMat,ColMajorMat,bool*);
@@ -31,5 +31,8 @@ ColMajorMat LUDecomp(ColMajorMat,bool*);
 
 void CF(ColMajorMat,bool*,bool*);
 void CFBacksub(ColMajorMat, ColMajorMat);
+void Householder(ColMajorMat, ColMajorMat);
+void HHBacksub(ColMajorMat, ColMajorMat, ColMajorMat);
+void Transpose(ColMajorMat);
 
 #endif

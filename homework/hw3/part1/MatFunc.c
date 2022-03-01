@@ -29,7 +29,7 @@ float TwoNorm(ColMajorMat A) {
 }
 
 /*calculates the 2-norm of a specified column vector of a matrix*/
-float TwoNormCol(ColMajorMat A, float col) {
+float TwoNormCol(ColMajorMat A, int col) {
     float norm = 0;
     for (int i = 0; i < A->m; i++) {
         norm = norm + A->data[MatIdx(A,i,col)]*A->data[MatIdx(A,i,col)];
@@ -159,7 +159,7 @@ ColMajorMat MatMatMult(ColMajorMat A, ColMajorMat B) {
         for (int col = 0; col < mat->n; col++) {
             sum = 0.0;
             for (int i = 0; i < A->n; i++) {
-                sum += A->data[MatIdx(A,row,i)]*B->data[MatIdx(A,i,col)];
+                sum += A->data[MatIdx(A,row,i)]*B->data[MatIdx(B,i,col)];
             }
             mat->data[MatIdx(mat,row,col)] = sum;
         }
@@ -276,6 +276,97 @@ void CFBacksub(ColMajorMat A, ColMajorMat B) {
                 B->data[MatIdx(B,i,Bcol)] -= A->data[MatIdx(A,k,i)]*B->data[MatIdx(B,k,Bcol)];
             }
             B->data[MatIdx(B,i,Bcol)] /= A->data[MatIdx(A,i,i)];
+        }
+    }
+}
+
+void Householder(ColMajorMat A, ColMajorMat Q) {
+    ColMajorMat H = malloc(sizeof(*H));
+    H->m = A->m; H->n = A->m;
+    H->data = calloc(H->m*H->n,sizeof(*H->data));
+
+    ColMajorMat V = malloc(sizeof(*V));
+    V->m = A->m; V->n = A->n;
+    V->data = calloc(V->m*V->n,sizeof(*V->data));
+
+    for (int col = 0; col < Q->m; col++) {
+        for (int row = 0; row < Q->m; row++) {
+            if (col == row) Q->data[MatIdx(Q,row,col)] = 1;
+            else Q->data[MatIdx(Q,row,col)] = 0;
+        }
+    }
+
+    float s;
+    float norm;
+
+    for (int j = 0; j < A->n; j++) {
+        s = 0;
+        for (int i = j; i < A->m; i++) {
+            s += A->data[MatIdx(A,i,j)]*A->data[MatIdx(A,i,j)];
+        }
+        s = sqrt(s);
+        s *= A->data[MatIdx(A,j,j)]/fabs(A->data[MatIdx(A,j,j)]);
+
+        for (int i = 0; i < A->m; i++) {
+            if (i < j) V->data[MatIdx(V,i,j)] = 0;
+            else if (i == j) V->data[MatIdx(V,i,j)] = A->data[MatIdx(A,i,j)] + s;
+            else V->data[MatIdx(V,i,j)] = A->data[MatIdx(A,i,j)];
+        }
+        norm = TwoNormCol(V, j);
+        for (int i = 0; i < A->m; i++) {
+            V->data[MatIdx(V,i,j)] /= norm;
+        }
+        //calculate 2v*v^t
+        for (int col = 0; col < V->m; col++) {
+            for (int row = 0; row < V->m; row++) {
+                H->data[MatIdx(H,row,col)] = 2*V->data[MatIdx(V,row,j)]*V->data[MatIdx(V,col,j)];
+            }
+        }
+        MatMatSub(A, MatMatMult(H, A));
+        MatMatSub(Q, MatMatMult(H, Q));
+
+    }
+    Transpose(Q);
+}
+
+void HHBacksub(ColMajorMat A, ColMajorMat Q, ColMajorMat B) {
+    Q->n = A->n;
+    float x[A->n];
+
+    // PrintMat(A);
+    // PrintMat(Q);
+
+
+    for (int i = 0; i < Q->n; i++) {
+        x[i] = 0;
+        for (int j = 0; j < Q->m; j++) {
+            x[i] += Q->data[MatIdx(Q,j,i)]*B->data[MatIdx(B,j,0)];
+        }
+    }
+
+    for (int row = A->n-1; row > -1; row--) {
+        for (int i = row+1; i < A->n; i++) {
+            x[row] -= A->data[MatIdx(A,row,i)]*x[i];
+        }
+        x[row] /= A->data[MatIdx(A,row,row)];
+    }
+
+    FILE *fptr;
+    fptr = fopen("../Cmat.dat","w");
+    fprintf(fptr,"%d 1\n", A->n);
+    for (int i = 0; i < A->n; i++) {
+        fprintf(fptr,"%f\n", x[i]);
+    }
+    fclose(fptr);
+}
+
+void Transpose(ColMajorMat A) {
+    float temp;
+    for (int i = 0; i < A->m; i++) {
+        for (int j = i+1; j < A->n; j++) {
+            temp = A->data[MatIdx(A,i,j)];
+            A->data[MatIdx(A,i,j)] = A->data[MatIdx(A,j,i)];
+            A->data[MatIdx(A,j,i)] = temp;
         }
     }
 }
