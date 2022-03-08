@@ -264,10 +264,112 @@
 	
 \paragraph{7.}
 	\subparagraph{a)}
-		
+		First we know that a normal matrix can be diagonalized and decomposed into SVD. If follows then that
+		\[
+		A^TA = (U\Sigma V^*)*(U\Sigma V^*) = V\Sigma U^*U\Sigma V^* = V\Sigma^*\Sigma V^*
+		\]
+		\[
+		= V
+		\begin{bmatrix}
+		\sigma_1^2 & && & & \\
+		& \sigma_2^2 & & \\
+		& & . & & & \\
+		& & & . & & \\
+		& & & & . &\\
+		& & & & & \sigma_m^2 \\
+		\end{bmatrix}
+		V^* = VD_{\lambda}V^*.
+		\]
+		Thus the eigenvalues of $A^TA$ are $\sigma_i^2$. Since $A^*$ is diagonalizable we can do
+		\[
+		A^T = (VD_{\lambda}V^T)^T = VD_{\lambda}^TV^T = VD_{\lambda}V^T.
+		\]
+		Thus the eigenvalues of are preserved by the transpose. We can then write 
+		\[
+		A^*Av_i = A^*\lambda_i v_i = \lambda_i A^* v_i = |\lambda_i|^2 v_i.
+		\]
+		From this we can conclude that 
+		\[
+		|\lambda_i|^2 = \sigma_i^2 \Rightarrow |\lambda_i| = \sigma_i 
+		\]
+		where $1 \le i \le m$.
 	
 	
 	\subparagraph{b)}
+		We start with a vector decomposed into the sum of orthonormal eigenvectors $x = \sum_{i=1}^{m} a_iv_i$. We will also assume that $||x|| = 1$. Then
+		\[
+		||x||^2 = \sum_{i=1}^{m} a_i^2 v_i^Tv_i = \sum_{i=1}^{m} a_i^2.
+		\Rightarrow ||x|| = \sqrt{\sum_{i=1}^{m} a_i^2}.
+		\]
+		If $||x|| = 1$ then
+		\[
+		1 = \sqrt{\sum_{i=1}^{m} a_i^2} \Rightarrow 1 = \sum_{i=1}^{m} a_i^2.
+		\]
+		and
+		\[
+		A^TAx = A^TA\sum_{i=1}^{m} a_iv_i = \sum_{i=1}^{m} a_iA^TAv_i = \sum_{i=1}^{m} a_i\lambda_i^2v_i
+		\]
+		and
+		\[
+		||Ax||^2 = (Ax)^TAx = x^TA^TAx = x^T\sum_{i=1}^{m} a_i\lambda_i^2v_i = 
+		\sum_{i=1}^{m} a_i^2\lambda_i^2 v^Tv_i = \sum_{i=1}^{m} a_i^2\lambda_i^2
+		\le \lambda_1^2 \sum_{i=1}^{m} a_i^2
+		\]\[
+		\Rightarrow ||Ax|| \le \lambda_1 \sqrt{\sum_{i=1}^{m} a_i^2} = \lambda_1
+		\]
+		gets us 
+		\[
+		||A|| = max\{||Ax||, ||x|| = 1\} = \max\limits_{||x|| = 1} \sqrt{||Ax||}
+		\le \max\limits_{||x|| = 1} \sqrt{\lambda_1^2\sum_{i=1}^{m} a_i^2} = \lambda_1.
+		\]
+		If we let $x = v_1$ then we notice that 
+		\[
+		||A||^2 \ge ||Ax|| = x^TA^TAx = \lambda_1^2 ||x|| = \lambda_1^2.
+		\]\[
+		\Rightarrow ||A|| \ge \lambda_1.
+		\]
+		Therefore $||A|| = \lambda_1$. It follows immediately that $||A|| = \sigma_1 = \rho(A)$.
+		
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	
 	
 \end{document}
