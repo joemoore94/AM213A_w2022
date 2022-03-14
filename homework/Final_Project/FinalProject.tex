@@ -103,7 +103,11 @@
 		
 		As the number of singular values increases the image becomes closer to the original. The error falls like $\frac{1}{k}$ and appears to asymptotically approach zero. This tells us that we can get most of the information we need from the first few singular values. The higher we up k the less information is added to our image. At $k = 1280$ the error is below $10^{-3}$. However, from the graph we can tell that the error drops below $10^{-3}$ closer to $k = 1000$. With far less than half the total number of singular values we have a very small error.
 	
-\paragraph{b)}
+\paragraph{b.1)}
+	\subparagraph{$\bullet$}
+		Both the Gauss-Jacobi and the Gauss-Seidel use an iterative method to solve $Ax = b$ for $x$. The Gauss-Jacobi simply splits up $A$ into its diagonal and remaining elements like $A = D + R$ and then follows $x^{k+1} = D^{-1}(b - Rx^k)$ until $x$ converges to a result. Gauss-Jacobi converges when $\rho(D^{-1}R) < 1$. Gauss-Jacobi further splits $R$ into upper and lower triangular matrices so that $A = L + D + U$. Gauss-Seidel follows $x^{k+1} = D^{-1}(b - Lx^{k+1} - Ux^{k})$ and converges for any symmetric, positive definite matrix. Gauss-Seidel converges faster than Gauss-Jacobi when they both converge. 
+		
+	\subparagraph{$\bullet$}	
 
 	
 \newpage	

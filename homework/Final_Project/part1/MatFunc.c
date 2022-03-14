@@ -499,3 +499,94 @@ void CopyMat(ColMajorMat A, ColMajorMat B) {
         }
     }
 }
+
+/* Takes in A and b from 'Ax = b' and return x. The algorithm runs until |b - Ax| < eps */
+ColMajorMat GaussJacobi(ColMajorMat A, ColMajorMat b, double eps) {
+    ColMajorMat x = malloc(sizeof(*x));
+    x->m = A->m; x->n = 1;
+    x->data = calloc(x->m*x->n,sizeof(*x->data));
+
+    ColMajorMat x_next = malloc(sizeof(*x_next));
+    x_next->m = A->m; x_next->n = 1;
+    x_next->data = calloc(x_next->m*x_next->n,sizeof(*x_next->data));
+
+    ColMajorMat r = malloc(sizeof(*r));
+    r->m = A->m; r->n = 1;
+    r->data = calloc(r->m*r->n,sizeof(*r->data));
+
+    FILE *fp;
+    fp = fopen("JacobiData.dat", "w");
+
+    double sum, norm = 10;
+    int i = 0;
+    while (norm > eps) {
+        for (int i = 0; i < A->m; i++) {
+            sum = 0;
+            for (int j = 0; j < A->m; j++) {
+                if (i != j) sum += x->data[MatIdx(x,j,0)]*A->data[MatIdx(A,i,j)];
+            }
+            x_next->data[MatIdx(x_next,i,0)] = b->data[MatIdx(b,i,0)] - sum;
+            x_next->data[MatIdx(x_next,i,0)] /= A->data[MatIdx(A,i,i)];
+        }
+        CopyMat(x, x_next);
+        for (int i = 0; i < A->m; i++) {
+            sum = 0;
+            for (int j = 0; j < A->m; j++) {
+                sum += x->data[MatIdx(x,j,0)]*A->data[MatIdx(A,i,j)];
+            }
+            r->data[MatIdx(r,i,0)] = b->data[MatIdx(b,i,0)] - sum;
+        }
+        norm = TwoNormCol(r, 0);
+        i++;
+        fprintf(fp, "%d %f\n", i, norm);
+    }
+    fclose(fp);
+    return x;
+}
+
+/* Takes in A and b from 'Ax = b' and return x. The algorithm runs until |b - Ax| < eps */
+ColMajorMat GaussSeidel(ColMajorMat A, ColMajorMat b, double eps) {
+    ColMajorMat x = malloc(sizeof(*x));
+    x->m = A->m; x->n = 1;
+    x->data = calloc(x->m*x->n,sizeof(*x->data));
+
+    ColMajorMat x_next = malloc(sizeof(*x_next));
+    x_next->m = A->m; x_next->n = 1;
+    x_next->data = calloc(x_next->m*x_next->n,sizeof(*x_next->data));
+
+    ColMajorMat r = malloc(sizeof(*r));
+    r->m = A->m; r->n = 1;
+    r->data = calloc(r->m*r->n,sizeof(*r->data));
+
+    FILE *fp;
+    fp = fopen("SeidelData.dat", "w");
+
+    double sum, norm = 10;
+    int i = 0;
+    while (norm > eps) {
+        for (int i = 0; i < A->m; i++) {
+            sum = 0;
+            for (int j = 0; j < i; j++) {
+                if (i != j) sum += x_next->data[MatIdx(x_next,j,0)]*A->data[MatIdx(A,i,j)];
+            }
+            for (int j = i+1; j < A->m; j++) {
+                if (i != j) sum += x->data[MatIdx(x,j,0)]*A->data[MatIdx(A,i,j)];
+            }
+            x_next->data[MatIdx(x_next,i,0)] = b->data[MatIdx(b,i,0)] - sum;
+            x_next->data[MatIdx(x_next,i,0)] /= A->data[MatIdx(A,i,i)];
+        }
+        CopyMat(x, x_next);
+        for (int i = 0; i < A->m; i++) {
+            sum = 0;
+            for (int j = 0; j < A->m; j++) {
+                sum += x->data[MatIdx(x,j,0)]*A->data[MatIdx(A,i,j)];
+            }
+            r->data[MatIdx(r,i,0)] = b->data[MatIdx(b,i,0)] - sum;
+        }
+        norm = TwoNormCol(r, 0);
+        i++;
+        fprintf(fp, "%d %f\n", i, norm);
+    }
+    fclose(fp);
+    return x;
+}

@@ -10,6 +10,7 @@
 #include <math.h>
 #include <stdio.h>
 #include <stdbool.h>
+#include<time.h>
 
 #include "ColMajorMat.h"
 
@@ -40,5 +41,8 @@ void Hessenberg(ColMajorMat);
 ColMajorMat I(double, double);
 ColMajorMat InverseIt(ColMajorMat, double);
 void CopyMat(ColMajorMat, ColMajorMat);
+
+ColMajorMat GaussJacobi(ColMajorMat,ColMajorMat,double);
+ColMajorMat GaussSeidel(ColMajorMat,ColMajorMat,double);
 
 #endif
