@@ -21,12 +21,16 @@ int main(int argc, char const *argv[]) {
     printf("Enter choice: ");
     scanf("%d", &choice);
 
-    int number;
-    printf("Enter integer value of diagonal elements: ");
-    scanf("%d", &number);
+    // int number;
+    // printf("Enter integer value of diagonal elements: ");
+    // scanf("%d", &number);
+    //
+    // for (int i = 0; i < A->m; i++) {
+    //     A->data[MatIdx(A,i,i)] = number;
+    // }
 
     for (int i = 0; i < A->m; i++) {
-        A->data[MatIdx(A,i,i)] = number;
+        A->data[MatIdx(A,i,i)] = i+1;
     }
 
     ColMajorMat x;
