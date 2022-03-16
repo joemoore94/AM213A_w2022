@@ -3,3 +3,7 @@ HW1: 80/100
 Hw2 Computational: 30/50
 Hw2 Theory: 38/50
 Hw2 Total: 68/100
+
+Hw3 Computational: 41/50
+Hw3 Theory: 40/50
+Hw3 Total: 81/100
