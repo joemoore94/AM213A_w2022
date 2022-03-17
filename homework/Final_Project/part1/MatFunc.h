@@ -44,5 +44,6 @@ void CopyMat(ColMajorMat, ColMajorMat);
 
 ColMajorMat GaussJacobi(ColMajorMat,ColMajorMat,double);
 ColMajorMat GaussSeidel(ColMajorMat,ColMajorMat,double);
+ColMajorMat CG(ColMajorMat,ColMajorMat,double);
 
 #endif
