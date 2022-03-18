@@ -539,8 +539,10 @@ ColMajorMat GaussJacobi(ColMajorMat A, ColMajorMat b, double eps) {
         norm = TwoNormCol(r, 0);
         i++;
         fprintf(fp, "%d %f\n", i, norm);
+        if (i > 1e6) break;
     }
     fclose(fp);
+    printf("\ni = %d\n", i);
     return x;
 }
 
@@ -586,7 +588,66 @@ ColMajorMat GaussSeidel(ColMajorMat A, ColMajorMat b, double eps) {
         norm = TwoNormCol(r, 0);
         i++;
         fprintf(fp, "%d %f\n", i, norm);
+        if (i > 1e6) break;
     }
     fclose(fp);
+    printf("\ni = %d\n", i);
+    return x;
+}
+
+/* Conjugate gradient algorithm solving for x in Ax = b */
+ColMajorMat CG(ColMajorMat A, ColMajorMat b, double eps) {
+    ColMajorMat x = malloc(sizeof(*x));
+    x->m = A->m; x->n = 1;
+    x->data = calloc(x->m*x->n,sizeof(*x->data));
+
+    ColMajorMat r = malloc(sizeof(*r));
+    r->m = A->m; r->n = 1;
+    r->data = calloc(r->m*r->n,sizeof(*r->data));
+
+    ColMajorMat p = malloc(sizeof(*p));
+    p->m = A->m; p->n = 1;
+    p->data = calloc(p->m*p->n,sizeof(*p->data));
+
+    ColMajorMat y = malloc(sizeof(*y));
+    y->m = A->m; y->n = 1;
+    y->data = calloc(y->m*y->n,sizeof(*y->data));
+
+    // initialize values
+    for (int i = 0; i < x->m; i++) {
+        x->data[MatIdx(x,i,0)] = 1; //rand() % 100;
+    }
+    CopyMat(r,b);
+    MatMatSub(r, MatMatMult(A, x));
+    CopyMat(p,r);
+
+    double E = 10, sum, alpha, beta;
+    int i = 0;
+    while(E > eps*eps) {
+        y = MatMatMult(A,p);
+        sum = 0;
+        for (int i = 0; i < p->m; i++) {
+            sum += p->data[MatIdx(p,i,0)]*y->data[MatIdx(y,i,0)];
+        }
+        alpha = E/sum;
+        for (int i = 0; i < p->m; i++) {
+            x->data[MatIdx(x,i,0)] += alpha*p->data[MatIdx(p,i,0)];
+        }
+        sum = 0;
+        for (int i = 0; i < p->m; i++) {
+            r->data[MatIdx(r,i,0)] -= y->data[MatIdx(y,i,0)]*alpha;
+            sum += pow(r->data[MatIdx(r,i,0)], 2);
+        }
+        free(y->data);
+        beta = sum/E;
+        E = sum;
+        for (int i = 0; i < p->m; i++) {
+            p->data[MatIdx(p,i,0)] *= beta;
+            p->data[MatIdx(p,i,0)] += r->data[MatIdx(r,i,0)];
+        }
+        i++;
+        // if (i > 1e6) break;
+    }
+    printf("\ni = %d\n", i);
     return x;
 }
